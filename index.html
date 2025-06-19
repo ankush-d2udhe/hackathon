@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embodied Carbon Emissions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+   body {
+    margin: 0;
+    padding: 40px;
+    width: 90%;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #333;
+    background: #f5f0ee;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.filters {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f5f0ee;
+    border-radius: 8px;
+    max-width: 500px;
+}
+
+.filters::before {
+    content: "Filter by";
+    font-weight: 700;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.filter-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #5c5c5c;
+    margin-bottom: 5px;
+}
+
+.filter-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-option {
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    background: transparent;
+    border: 1px solid #915c5a;
+    color: #915c5a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.filter-option.active {
+    background-color: #915c5a;
+    color: white;
+    font-weight: 500;
+    border-color: #915c5a;
+}
+
+.filter-option.active::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background-color: white;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.key {
+    margin: 25px 0;
+    padding: 20px;
+    background-color: #f7efed;
+    border-radius: 8px;
+    display: inline-block;
+    max-width: 350px;
+    font-family: inherit;
+}
+
+.key-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.key-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+.key-line {
+    width: 36px;
+    height: 1px;
+    margin-right: 12px;
+    margin-left: 4px;
+}
+
+.key-line.dashed {
+    border-top: 2px dashed #D19B9B;
+}
+
+.key-line.solid {
+    border-top: 2px solid #362412;
+}
+.chart-container {
+    display: flex;
+    height: 350px;
+    gap: 12px;
+    align-items: flex-end;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 30px;
+    margin-bottom: 15px;
+    position: relative;
+}
+.chart-title {
+    font-size: 32px; /* or use 36px for more emphasis */
+    font-weight: 350;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: #333;
+    font-family: Arial, sans-serif;
+}
+.download {
+  text-align: right;
+  padding: 0.5rem 1rem;
+  background-color: #f5f0ee;
+  color: #333;
+  font-weight: 500;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.download i {
+  font-size: 2.2rem;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+
+
+.bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    min-width: 40px;
+}
+
+.bar-value {
+    position: absolute;
+    top: -28px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.bar-rect {
+    width: 32px;
+    
+    transition: height 0.3s ease;
+}
+
+.y-axis {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.y-tick {
+    position: absolute;
+    width: 100%;
+    border-top: 1px dashed #915c5a; /* Or your desired color */
+    color: #999;
+    font-size: 12px;
+}
+
+.y-tick-label {
+    position: absolute;
+    left: -30px;
+    top: -8px;
+    background: white;
+    padding-right: 5px;
+}
+
+.download-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.x-axis-title {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-top: 15px;
+}
+.chart-title nav{
+    color: #9b6228;
+}
+.y-target-line {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 0;
+    pointer-events: none;
+}
+
+.y-target-line.dashed {
+    border-top: 2px dashed #D19B9B;
+}
+
+.y-target-line.solid {
+    border-top: 2px solid #362412;
+}
+/* Color for Y-axis labels */
+.y-tick-label {
+    color: #915c5a; /* or any desired color */
+    font-weight: 500;
+}
+
+/* Color for X-axis title */
+.x-axis-title {
+    color: #915c5a; /* or any desired color */
+    font-weight: 500;
+}
+
+.chart-container {
+    border-bottom: 2px solid #915c5a; /* Change this color as needed */
+}
+
+.y-axis-line {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 2px; /* Thickness of Y-axis line */
+    height: 100%;
+    background-color: #915c5a; /* Choose your desired color */
+    z-index: 1;
+}
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+        <div class="filters">
+            <div class="filter-group">
+                <div class="filter-label">Type</div>
+                <div class="filter-options">
+                    <div class="filter-option active">Refurbishment</div>
+                    <div class="filter-option">New build</div>
+                    <div class="filter-option">All</div>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-label">Status</div>
+                <div class="filter-options">
+                    <div class="filter-option active">Complete</div>
+                    <div class="filter-option">Estimate</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-header">
+            <div class="chart-title" >EMBODIED <br> <nav> CARBON <br> EMISSIONS</nav></div>
+            <div class="chart-subtitle">Intensity measured by kgCO<sub>2</sub>/m<sup>2</sup></div>
+        </div>
+    </div>
+    <div class="download">
+         Download the data <i class="fa-regular fa-circle-down"></i>
+      </div>      
+    <div class="key">
+        <div class="key-title">Key</div>
+        <div class="key-item">
+            <div class="key-line dashed"></div>
+            <div>500 kgCO<sub>2</sub>/m<sup>2</sup> - Embodied Carbon Target 2030</div>
+        </div>
+        <div class="key-item">
+            <div class="key-line solid"></div>
+            <div>600 kgCO<sub>2</sub>/m<sup>2</sup> - Embodied Carbon Target 2025</div>
+        </div>
+    </div>    
+    
+    <div class="chart-container" id="chartContainer">
+        <div class="y-axis" id="yAxis"></div>
+        <!-- Bars will be generated by JavaScript -->
+    </div>
+    
+    <div class="x-axis-title">Error added carbon intensity (kgCO<sub>2</sub>/m<sup>2</sup>)</div>
+    
+    <a href="#" class="download-link">Download the data</a>
+    
+    <script>
+        // Data for the chart (from your image)
+        const data = [549, 278, 875, 551, 617, 506, 36, 185, 191, 122, 550, 881, 539, 269, 29, 82,44,109,106,607,528];
+        const maxValue = 800;
+        const target2030 = 500;
+        const target2025 = 600;
+        
+        // Create Y-axis
+        const yAxis = document.getElementById('yAxis');
+        const chartHeight = 350; // Fixed height to match design
+        
+        // Create Y-axis ticks and labels
+        for (let i = 0; i <= maxValue; i += 200) {
+            const tick = document.createElement('div');
+            tick.className = 'y-tick';
+            tick.style.bottom = `${(i / maxValue) * 100}%`;
+            
+            const label = document.createElement('div');
+            label.className = 'y-tick-label';
+            label.textContent = i;
+            tick.appendChild(label);
+            
+            yAxis.appendChild(tick);
+        }
+        
+        // Create bars
+        data.forEach((value, index) => {
+            const barHeight = (value / maxValue) * chartHeight;
+            const isAbove2030 = value > target2030;
+            const isAbove2025 = value > target2025;
+            
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            
+            const barValue = document.createElement('div');
+            barValue.className = 'bar-value';
+            barValue.textContent = value;
+            bar.appendChild(barValue);
+            
+            const barRect = document.createElement('div');
+            barRect.className = 'bar-rect';
+            barRect.style.height = `${barHeight}px`;
+            barRect.style.backgroundColor = isAbove2025 ? '#D19B9B' : (isAbove2030 ? '#8B4A4A' : '#D19B9B');
+            bar.appendChild(barRect);
+            
+            document.getElementById('chartContainer').appendChild(bar);
+        });
+        
+        // Filter functionality
+        document.querySelectorAll('.filter-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const parent = this.parentElement;
+                parent.querySelectorAll('.filter-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        // Add horizontal lines for targets
+const chartContainerEl = document.getElementById('chartContainer');
+
+function addTargetLine(value, type) {
+    const line = document.createElement('div');
+    line.className = `y-target-line ${type}`;
+    line.style.bottom = `${(value / maxValue) * 100}%`;
+    chartContainerEl.appendChild(line);
+}
+
+addTargetLine(target2030, 'dashed');
+addTargetLine(target2025, 'solid');
+// Add vertical Y-axis line
+// Add vertical Y-axis line
+const yAxisLine = document.createElement('div');
+yAxisLine.className = 'y-axis-line';
+chartContainerEl.appendChild(yAxisLine);
+
+    </script>
+</body>
+</html>
